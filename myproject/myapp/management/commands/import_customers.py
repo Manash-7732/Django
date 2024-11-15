@@ -43,7 +43,7 @@ class Command(BaseCommand):
 
                   
                     LoanData.objects.create(
-                        customer=customer_instance, 
+                        Customer=customer_instance, 
                         loan_id=row['loan_id'],  
                         loan_amount=row['loan_amount'],
                         tenure=row['tenure'],

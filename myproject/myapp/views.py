@@ -12,22 +12,23 @@ class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
 
     def create(self, request, *args, **kwargs):
-      
-        first_name = request.data.get('first_name')
-        last_name = request.data.get('last_name')
-        age = request.data.get('age')
-        monthly_income = request.data.get('monthly_income')
-        phone_number = request.data.get('phone_number')
+        try:
+            f_name = request.data.get('first_name')
+            last_name = request.data.get('last_name')
+            age = request.data.get('age')
+            monthly_income = request.data.get('monthly_income')
+            phone_number = request.data.get('phone_number')
 
-        if not first_name or not last_name or not age or not monthly_income or not phone_number:
-            return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+            if not f_name or not last_name or not age or not monthly_income or not phone_number:
+                return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-       
-        customer = create_customer(first_name, last_name, age, monthly_income, phone_number)
-
- 
-        serializer = self.get_serializer(customer)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+            customer = create_customer(f_name=f_name, last_name=last_name, age=age, monthly_income=monthly_income, phone_number=phone_number)
+            print(customer)
+            serializer = self.get_serializer(customer)
+            print(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response("error", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class LoanDataViewSet(viewsets.ModelViewSet):
     queryset = LoanData.objects.all()
