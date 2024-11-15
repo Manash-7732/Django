@@ -4,7 +4,7 @@ from .views import CustomerViewSet, LoanDataViewSet,check_eligibility,process_ne
 
 router = DefaultRouter()
 router.register(r'register', CustomerViewSet)
-router.register(r'loans', LoanDataViewSet)
+
 
 urlpatterns = [
     path('', include(router.urls)),

@@ -12,21 +12,20 @@ class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
 
     def create(self, request, *args, **kwargs):
-        # Extract data from request
+      
         first_name = request.data.get('first_name')
         last_name = request.data.get('last_name')
         age = request.data.get('age')
         monthly_income = request.data.get('monthly_income')
         phone_number = request.data.get('phone_number')
 
-        # Check if required fields are provided
         if not first_name or not last_name or not age or not monthly_income or not phone_number:
             return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Call the controller function to create the customer
+       
         customer = create_customer(first_name, last_name, age, monthly_income, phone_number)
 
-        # Serialize and return the newly created customer data
+ 
         serializer = self.get_serializer(customer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -47,7 +46,7 @@ def check_eligibility(request):
     
     print(customer_id);
 
-    # Call the controller to check eligibility
+
     result = check_loan_eligibility(customer_id, loan_amount, interest_rate, tenure);
     
     return Response(result, status=status.HTTP_200_OK)
@@ -58,21 +57,20 @@ def process_new_loan(request):
     from decimal import Decimal
     from datetime import date
 
-    # Extract data from request
+
     customer_id = request.data.get("customer_id")
     loan_amount = Decimal(request.data.get("loan_amount"))
     interest_rate = Decimal(request.data.get("interest_rate"))
     tenure = int(request.data.get("tenure"))
 
-    # Check eligibility using the function
+
     eligibility_result = check_loan_eligibility(customer_id, loan_amount, interest_rate, tenure)
     loan = LoanData.objects.order_by('-loan_id').first()
     print(eligibility_result["approval"]);
     print(loan.loan_id)
 
-    # If the loan is approved, save it and return relevant response data
     if eligibility_result["approval"]:
-        # Creating a new loan entry with emis_paid_on_time initialized to 0
+
         new_loan = LoanData.objects.create(
             loan_id=str(int(loan.loan_id) + 1),
             customer_id=customer_id,
@@ -80,9 +78,9 @@ def process_new_loan(request):
             interest_rate=eligibility_result["corrected_interest_rate"],
             tenure=tenure,
             monthly_repayment=eligibility_result["monthly_installment"],
-            emis_paid_on_time=0,  # Initializing EMIs paid on time to 0
-            start_date=date.today(),  # Assuming the loan starts today
-            end_date=date.today().replace(year=date.today().year + tenure // 12)  # Example end date based on tenure
+            emis_paid_on_time=0, 
+            start_date=date.today(),
+            end_date=date.today().replace(year=date.today().year + tenure // 12) 
         )
         new_loan.save()
 
@@ -94,7 +92,7 @@ def process_new_loan(request):
             "monthly_installment": float(eligibility_result["monthly_installment"])
         }, status=status.HTTP_201_CREATED)
 
-    # If not approved, return a response with loan_approved as False and an appropriate message
+   
     else:
         return Response({
             "loan_id": None,
@@ -109,12 +107,12 @@ def process_new_loan(request):
 @api_view(['GET'])
 def view_loan_details(request, loan_id):
     try:
-        # Retrieve loan by loan_id
+
         loan = LoanData.objects.get(loan_id=loan_id)
-        # Fetch related customer details
+    
         customer = Customer.objects.get(customer_id=loan.customer_id)
 
-        # Construct the response
+       
         response_data = {
             "loan_id": loan.id,
             "customer": {
@@ -141,9 +139,9 @@ def view_loan_details(request, loan_id):
 @api_view(['GET'])
 def view_loan_details_by_customer_id(request, customer_id):
     try:
-        # Retrieve loan by loan_id
+    
         loans = LoanData.objects.all().filter(customer_id=customer_id)
-        # Construct the response
+   
         answer = []
         for loan in loans:
             response_data = {
